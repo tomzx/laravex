@@ -117,6 +117,20 @@ class DatabaseQueryBuilderTest extends PHPUnit_Framework_TestCase {
 	}
 
 
+	public function testWhereNotNull()
+	{
+		$builder = $this->getBuilder();
+		$builder->select('*')->from('users')->where('id', '!=', null);
+		$this->assertEquals('select * from "users" where "id" is not null', $builder->toSql());
+		$this->assertCount(0, $builder->getBindings());
+
+		$builder = $this->getBuilder();
+		$builder->select('*')->from('users')->where('id', '<>', null);
+		$this->assertEquals('select * from "users" where "id" is not null', $builder->toSql());
+		$this->assertCount(0, $builder->getBindings());
+	}
+
+
 	public function testMySqlWrappingProtectsQuotationMarks()
 	{
 		$builder = $this->getMySqlBuilder();
@@ -529,6 +543,52 @@ class DatabaseQueryBuilderTest extends PHPUnit_Framework_TestCase {
 		$builder->select('*')->from('users')->where('id', 1)->orWhere('name', 'foo');
 		$this->assertEquals('select * from "users" where "id" = ? or "name" = ?', $builder->toSql());
 		$this->assertEquals([0 => 1, 1 => 'foo'], $builder->getBindings());
+	}
+
+
+
+	public function testWhere1ValueIsGiven()
+	{
+		$builder = $this->getBuilder();
+		$builder->select('*')->from('users')->where('id')->orWhere('name');
+		$this->assertEquals('select * from "users" where "id" is null or "name" is null', $builder->toSql());
+	}
+
+
+	public function testWhere2ValuesAreGiven()
+	{
+		$builder = $this->getBuilder();
+		$builder->select('*')->from('users')->where('id', 1)->orWhere('name', 'foo');
+		$this->assertEquals('select * from "users" where "id" = ? or "name" = ?', $builder->toSql());
+		$this->assertEquals(array(0 => 1, 1 => 'foo'), $builder->getBindings());
+	}
+
+
+	public function testWhere2ValuesShouldNotBeUsedWithVariables()
+	{
+		$builder = $this->getBuilder();
+		$search = 'between';
+		$builder->select('*')->from('users')->where('id', $search);
+		$this->assertEquals('select * from "users" where "id" is not null', $builder->toSql());
+		$this->assertCount(0, $builder->getBindings());
+	}
+
+
+	public function testWhere3ValuesAreGiven()
+	{
+		$builder = $this->getBuilder();
+		$builder->select('*')->from('users')->where('id', '<>', 1)->orWhere('name', '!=', 'foo');
+		$this->assertEquals('select * from "users" where "id" <> ? or "name" != ?', $builder->toSql());
+		$this->assertEquals(array(0 => 1, 1 => 'foo'), $builder->getBindings());
+	}
+
+
+	public function testWhere4ValuesAreGiven()
+	{
+		$builder = $this->getBuilder();
+		$builder->select('*')->from('users')->where('id', '<>', 1)->Where('name', '!=', 'foo', 'or');
+		$this->assertEquals('select * from "users" where "id" <> ? or "name" != ?', $builder->toSql());
+		$this->assertEquals(array(0 => 1, 1 => 'foo'), $builder->getBindings());
 	}
 
 
@@ -996,6 +1056,32 @@ class DatabaseQueryBuilderTest extends PHPUnit_Framework_TestCase {
 		$builder = $this->getBuilder();
 		$builder->select('*')->from('users')->where('foo', null);
 		$this->assertEquals('select * from "users" where "foo" is null', $builder->toSql());
+	}
+
+
+	public function testWhereProvidingFalseAsSecondParameterBuildsCorrectly()
+	{
+		$builder = $this->getBuilder();
+		$builder->select('*')->from('users')->where('foo', false);
+		$this->assertEquals('select * from "users" where "foo" = ?', $builder->toSql());
+		$this->assertEquals(array(0), $builder->getBindings());
+	}
+
+
+	public function testOrWhereProvidingNullAsSecondParameterBuildsCorrectly()
+	{
+		$builder = $this->getBuilder();
+		$builder->select('*')->from('users')->orWhere('foo', null);
+		$this->assertEquals('select * from "users" where "foo" is null', $builder->toSql());
+	}
+
+
+	public function testOrWhereProvidingFalseAsSecondParameterBuildsCorrectly()
+	{
+		$builder = $this->getBuilder();
+		$builder->select('*')->from('users')->orWhere('foo', false);
+		$this->assertEquals('select * from "users" where "foo" = ?', $builder->toSql());
+		$this->assertEquals(array(0), $builder->getBindings());
 	}
 
 

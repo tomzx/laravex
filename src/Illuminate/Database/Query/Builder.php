@@ -444,18 +444,6 @@ class Builder {
 			}, $boolean);
 		}
 
-		// Here we will make some assumptions about the operator. If only 2 values are
-		// passed to the method, we will assume that the operator is an equals sign
-		// and keep going. Otherwise, we'll require the operator to be passed in.
-		if (func_num_args() == 2)
-		{
-			list($value, $operator) = [$operator, '='];
-		}
-		elseif ($this->invalidOperatorAndValue($operator, $value))
-		{
-			throw new InvalidArgumentException("Value must be provided.");
-		}
-
 		// If the columns is actually a Closure instance, we will assume the developer
 		// wants to begin a nested where statement which is wrapped in parenthesis.
 		// We'll add that Closure to the query then return back out immediately.
@@ -467,10 +455,7 @@ class Builder {
 		// If the given operator is not found in the list of valid operators we will
 		// assume that the developer is just short-cutting the '=' operators and
 		// we will set the operators to '=' and set the values appropriately.
-		if ( ! in_array(strtolower($operator), $this->operators, true))
-		{
-			list($value, $operator) = [$operator, '='];
-		}
+		list($operator, $value) = $this->remapOperatorAndValue($operator, $value);
 
 		// If the value is a Closure, it means the developer is performing an entire
 		// sub-select within the query and we will need to compile the sub-select
@@ -483,7 +468,7 @@ class Builder {
 		// If the value is "null", we will just assume the developer wants to add a
 		// where null clause to the query. So, we will allow a short-cut here to
 		// that method for convenience so the developer doesn't have to check.
-		if (is_null($value))
+		if ($value === null)
 		{
 			return $this->whereNull($column, $boolean, $operator != '=');
 		}
@@ -517,17 +502,33 @@ class Builder {
 	}
 
 	/**
-	 * Determine if the given operator and value combination is legal.
+	 * Remap operator and value based on their current value.
+	 *
+	 * Remaps ('somestring', null) -> ('=', 'somestring').
+	 *
+	 * @param  string $operator
+	 * @param  string $value
+	 * @return array
+	 */
+	protected function remapOperatorAndValue($operator, $value)
+	{
+		if ($this->isValidOperator($operator))
+		{
+			return [$operator, $value];
+		}
+
+		return ['=', $operator];
+	}
+
+	/**
+	 * Determine if the given operator is legal.
 	 *
 	 * @param  string  $operator
-	 * @param  mixed  $value
 	 * @return bool
 	 */
-	protected function invalidOperatorAndValue($operator, $value)
+	protected function isValidOperator($operator)
 	{
-		$isOperator = in_array($operator, $this->operators);
-
-		return ($isOperator && $operator != '=' && is_null($value));
+		return in_array($operator, $this->operators);
 	}
 
 	/**
