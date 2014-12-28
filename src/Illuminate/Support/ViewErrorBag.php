@@ -33,15 +33,15 @@ class ViewErrorBag implements Countable {
 	{
 		return array_get($this->bags, $key, new MessageBag);
 	}
-	
+
 	/**
 	 * Get all the bags.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getBags()
 	{
-		return $this->bags;	
+		return $this->bags;
 	}
 
 	/**
@@ -77,7 +77,7 @@ class ViewErrorBag implements Countable {
 	 */
 	public function __call($method, $parameters)
 	{
-		return call_user_func_array(array($this->default, $method), $parameters);
+		return call_user_func_array([$this->default, $method], $parameters);
 	}
 
 	/**

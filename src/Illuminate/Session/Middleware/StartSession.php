@@ -222,7 +222,7 @@ class StartSession implements MiddlewareContract, TerminableMiddleware {
 	{
 		$config = $config ?: $this->manager->getSessionConfig();
 
-		return ! in_array($config['driver'], array(null, 'array'));
+		return ! in_array($config['driver'], [null, 'array']);
 	}
 
 	/**

@@ -170,7 +170,7 @@ trait ApplicationTrait {
 	 */
 	public function seed($class = 'DatabaseSeeder')
 	{
-		$this->app['Illuminate\Contracts\Console\Kernel']->call('db:seed', array('--class' => $class));
+		$this->app['Illuminate\Contracts\Console\Kernel']->call('db:seed', ['--class' => $class]);
 	}
 
 }

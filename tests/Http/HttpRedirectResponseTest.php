@@ -27,10 +27,10 @@ class HttpRedirectResponseTest extends PHPUnit_Framework_TestCase {
 	public function testWithOnRedirect()
 {
 		$response = new RedirectResponse('foo.bar');
-		$response->setRequest(Request::create('/', 'GET', array('name' => 'Taylor', 'age' => 26)));
+		$response->setRequest(Request::create('/', 'GET', ['name' => 'Taylor', 'age' => 26]));
 		$response->setSession($session = m::mock('Illuminate\Session\Store'));
 		$session->shouldReceive('flash')->twice();
-		$response->with(array('name', 'age'));
+		$response->with(['name', 'age']);
 	}
 
 
@@ -49,9 +49,9 @@ class HttpRedirectResponseTest extends PHPUnit_Framework_TestCase {
 	public function testInputOnRedirect()
 	{
 		$response = new RedirectResponse('foo.bar');
-		$response->setRequest(Request::create('/', 'GET', array('name' => 'Taylor', 'age' => 26)));
+		$response->setRequest(Request::create('/', 'GET', ['name' => 'Taylor', 'age' => 26]));
 		$response->setSession($session = m::mock('Illuminate\Session\Store'));
-		$session->shouldReceive('flashInput')->once()->with(array('name' => 'Taylor', 'age' => 26));
+		$session->shouldReceive('flashInput')->once()->with(['name' => 'Taylor', 'age' => 26]);
 		$response->withInput();
 	}
 
@@ -59,9 +59,9 @@ class HttpRedirectResponseTest extends PHPUnit_Framework_TestCase {
 	public function testOnlyInputOnRedirect()
 	{
 		$response = new RedirectResponse('foo.bar');
-		$response->setRequest(Request::create('/', 'GET', array('name' => 'Taylor', 'age' => 26)));
+		$response->setRequest(Request::create('/', 'GET', ['name' => 'Taylor', 'age' => 26]));
 		$response->setSession($session = m::mock('Illuminate\Session\Store'));
-		$session->shouldReceive('flashInput')->once()->with(array('name' => 'Taylor'));
+		$session->shouldReceive('flashInput')->once()->with(['name' => 'Taylor']);
 		$response->onlyInput('name');
 	}
 
@@ -69,9 +69,9 @@ class HttpRedirectResponseTest extends PHPUnit_Framework_TestCase {
 	public function testExceptInputOnRedirect()
 	{
 		$response = new RedirectResponse('foo.bar');
-		$response->setRequest(Request::create('/', 'GET', array('name' => 'Taylor', 'age' => 26)));
+		$response->setRequest(Request::create('/', 'GET', ['name' => 'Taylor', 'age' => 26]));
 		$response->setSession($session = m::mock('Illuminate\Session\Store'));
-		$session->shouldReceive('flashInput')->once()->with(array('name' => 'Taylor'));
+		$session->shouldReceive('flashInput')->once()->with(['name' => 'Taylor']);
 		$response->exceptInput('age');
 	}
 
@@ -79,7 +79,7 @@ class HttpRedirectResponseTest extends PHPUnit_Framework_TestCase {
 	public function testFlashingErrorsOnRedirect()
 	{
 		$response = new RedirectResponse('foo.bar');
-		$response->setRequest(Request::create('/', 'GET', array('name' => 'Taylor', 'age' => 26)));
+		$response->setRequest(Request::create('/', 'GET', ['name' => 'Taylor', 'age' => 26]));
 		$response->setSession($session = m::mock('Illuminate\Session\Store'));
 		$session->shouldReceive('get')->with('errors', m::type('Illuminate\Support\ViewErrorBag'))->andReturn(new Illuminate\Support\ViewErrorBag);
 		$session->shouldReceive('flash')->once()->with('errors', m::type('Illuminate\Support\ViewErrorBag'));
@@ -107,11 +107,11 @@ class HttpRedirectResponseTest extends PHPUnit_Framework_TestCase {
 	public function testRedirectWithErrorsArrayConvertsToMessageBag()
 	{
 		$response = new RedirectResponse('foo.bar');
-		$response->setRequest(Request::create('/', 'GET', array('name' => 'Taylor', 'age' => 26)));
+		$response->setRequest(Request::create('/', 'GET', ['name' => 'Taylor', 'age' => 26]));
 		$response->setSession($session = m::mock('Illuminate\Session\Store'));
 		$session->shouldReceive('get')->with('errors', m::type('Illuminate\Support\ViewErrorBag'))->andReturn(new Illuminate\Support\ViewErrorBag);
 		$session->shouldReceive('flash')->once()->with('errors', m::type('Illuminate\Support\ViewErrorBag'));
-		$provider = array('foo' => 'bar');
+		$provider = ['foo' => 'bar'];
 		$response->withErrors($provider);
 	}
 
@@ -119,7 +119,7 @@ class HttpRedirectResponseTest extends PHPUnit_Framework_TestCase {
 	public function testMagicCall()
 	{
 		$response = new RedirectResponse('foo.bar');
-		$response->setRequest(Request::create('/', 'GET', array('name' => 'Taylor', 'age' => 26)));
+		$response->setRequest(Request::create('/', 'GET', ['name' => 'Taylor', 'age' => 26]));
 		$response->setSession($session = m::mock('Illuminate\Session\Store'));
 		$session->shouldReceive('flash')->once()->with('foo', 'bar');
 		$response->withFoo('bar');

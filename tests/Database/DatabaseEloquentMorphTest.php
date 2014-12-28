@@ -21,14 +21,14 @@ class DatabaseEloquentMorphTest extends PHPUnit_Framework_TestCase {
 	public function testMorphOneEagerConstraintsAreProperlyAdded()
 	{
 		$relation = $this->getOneRelation();
-		$relation->getQuery()->shouldReceive('whereIn')->once()->with('table.morph_id', array(1, 2));
+		$relation->getQuery()->shouldReceive('whereIn')->once()->with('table.morph_id', [1, 2]);
 		$relation->getQuery()->shouldReceive('where')->once()->with('table.morph_type', get_class($relation->getParent()));
 
 		$model1 = new EloquentMorphResetModelStub;
 		$model1->id = 1;
 		$model2 = new EloquentMorphResetModelStub;
 		$model2->id = 2;
-		$relation->addEagerConstraints(array($model1, $model2));
+		$relation->addEagerConstraints([$model1, $model2]);
 	}
 
 
@@ -45,14 +45,14 @@ class DatabaseEloquentMorphTest extends PHPUnit_Framework_TestCase {
 	public function testMorphManyEagerConstraintsAreProperlyAdded()
 	{
 		$relation = $this->getManyRelation();
-		$relation->getQuery()->shouldReceive('whereIn')->once()->with('table.morph_id', array(1, 2));
+		$relation->getQuery()->shouldReceive('whereIn')->once()->with('table.morph_id', [1, 2]);
 		$relation->getQuery()->shouldReceive('where')->once()->with('table.morph_type', get_class($relation->getParent()));
 
 		$model1 = new EloquentMorphResetModelStub;
 		$model1->id = 1;
 		$model2 = new EloquentMorphResetModelStub;
 		$model2->id = 2;
-		$relation->addEagerConstraints(array($model1, $model2));
+		$relation->addEagerConstraints([$model1, $model2]);
 	}
 
 
@@ -63,10 +63,10 @@ class DatabaseEloquentMorphTest extends PHPUnit_Framework_TestCase {
 		$created = m::mock('Illuminate\Database\Eloquent\Model');
 		$created->shouldReceive('setAttribute')->once()->with('morph_id', 1);
 		$created->shouldReceive('setAttribute')->once()->with('morph_type', get_class($relation->getParent()));
-		$relation->getRelated()->shouldReceive('newInstance')->once()->with(array('name' => 'taylor'))->andReturn($created);
+		$relation->getRelated()->shouldReceive('newInstance')->once()->with(['name' => 'taylor'])->andReturn($created);
 		$created->shouldReceive('save')->once()->andReturn(true);
 
-		$this->assertEquals($created, $relation->create(array('name' => 'taylor')));
+		$this->assertEquals($created, $relation->create(['name' => 'taylor']));
 	}
 
 

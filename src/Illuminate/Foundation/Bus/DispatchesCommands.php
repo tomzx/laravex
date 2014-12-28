@@ -90,7 +90,7 @@ trait DispatchesCommands {
 	 * @return mixed
 	 */
 	protected function getParameterValueForCommand($command, ArrayAccess $source,
-                                                   ReflectionParameter $parameter, array $extras = array())
+                                                   ReflectionParameter $parameter, array $extras = [])
 	{
 		$value = $this->extractValueFromExtras($parameter, $extras)
 								?: $this->extractValueFromSource($source, $parameter);
